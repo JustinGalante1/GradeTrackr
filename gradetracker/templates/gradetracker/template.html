@@ -17,10 +17,15 @@
             <div class="form-row">
                 <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
             </div>
-            <div class="form-row">
-                <a class="nav-item nav-link" href="{% url 'gradetracker:index' %}">Overview</a>
-                <a class="nav-item nav-link" href="{% url 'gradetracker:add' %}">Add a Course</a>
-            </div>
+            {% if user.is_authenticated %}
+                <div class="form-row">
+                    <a class="nav-item nav-link" href="{% url 'gradetracker:index' %}">Overview</a>
+                    <a class="nav-item nav-link" href="{% url 'gradetracker:add' %}">Add a Course</a>
+                </div>
+            {% else %}
+                <div>
+                    <p><strong>Sign in to use stuff!</strong></p>
+                </div>
         </form>
         <hr class="my-4">
         {% if user.is_authenticated %}
