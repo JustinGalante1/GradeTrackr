@@ -4,30 +4,12 @@
 {% block content %}
 <body>
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}<br>
-    <form action = "{% url 'gradetracker:add' %}" method = "post">
+    <form action = "{% url 'gradetracker:addAssignment' %}" method = "post">
     {% csrf_token %}
         <div class = "tabbed">
-            <label class = "section">Add a course to your schedule</label>
+            <label class = "section">Add an assignment to your Course</label>
         </div>
         <hr class="my-4">
-        <div class = "tabbed">
-            <div>
-                <input type="hidden" name="enrolled" value="False">
-                <input type="checkbox" id="enrolled" name="enrolled" value="True">
-                <label for="finished">Currently Enrolled</label>
-            </div>
-            <div>
-                <input type="hidden" name="verified" value="False">
-                <input type="checkbox" id="verified" name="verified" value="True">
-                <label for="verified">Class is on Lou's List</label>
-            </div>
-            <div>
-                <input type="hidden" name="included" value="False">
-                <input type="checkbox" id="included" name="included", value="True">
-                <label for="included">Class should be included in GPA calculation</label>
-            </div>
-            <br>
-        </div>
         <div>
             <div class="col-3">
                 <label for="courseTitle">Course Name</label>

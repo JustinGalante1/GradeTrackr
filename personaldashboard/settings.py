@@ -136,9 +136,9 @@ AUTHENTICATION_BACKENDS = (
 
 # Check to see if application is running on Heroku before calling 
 # django_heroku.settings(locals())
-if '/app' in os.environ['HOME']:
-    import django_heroku
-    django_heroku.settings(locals())
+# if '/app' in os.environ['HOME']:
+#     import django_heroku
+#     django_heroku.settings(locals())
 
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/gradetracker/index'

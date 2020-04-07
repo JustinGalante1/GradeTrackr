@@ -17,7 +17,7 @@ class TestView(TemplateView):
     template_name = 'gradetracker/test.html'
 
 
-def add(request):
+def addCourse(request):
     if request.method == 'POST':
         try:
             finishedCourse = request.POST.get('enrolled')
@@ -25,8 +25,6 @@ def add(request):
                 finishedCourse = "True"
             else:
                 finishedCourse = "False"
-
-
             verifiedClass = request.POST.get('verified')
             includeInGPA = request.POST.get('included')
             professorEmail = request.POST.get('email')
@@ -47,10 +45,14 @@ def add(request):
             new_course.student_It_Belongs_To = current_student
             new_course.save()
         except Exception as e:
-            return render(request, 'gradetracker/add.html', {'error_message': "HELLO " + str(e)})
+            return render(request, 'gradetracker/addCourse.html', {'error_message': "HELLO " + str(e)})
         return HttpResponseRedirect(reverse('gradetracker:index'))
     else:
-        return render(request, 'gradetracker/add.html',)
+        return render(request, 'gradetracker/addCourse.html', )
+
+
+def addAssignment(request):
+    return render(request, 'gradetracker/addAssignment.html', )
 
 
 class IndexView(TemplateView):

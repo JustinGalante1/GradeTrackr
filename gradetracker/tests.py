@@ -6,6 +6,9 @@ class GradeTrackerTestCase(TestCase):
         #need to settle some primary keys/identifiers before using this, must figure out user/student authentication model first
         pass
 
+    def add_course_test(self):
+        
+
     
     def test_set_some_default_grade_averages_to_a_course(self):
         student1 = Student.objects.create()

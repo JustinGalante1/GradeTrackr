@@ -1,7 +1,7 @@
 {% load static %}
 {% load socialaccount %}
 {% providers_media_js %}
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" ntegrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKitu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="{% static 'gradetracker/style.css' %}">
 <style>
 .tabbed {
@@ -20,12 +20,13 @@
             {% if user.is_authenticated %}
                 <div class="form-row">
                     <a class="nav-item nav-link" href="{% url 'gradetracker:index' %}">Overview</a>
-                    <a class="nav-item nav-link" href="{% url 'gradetracker:add' %}">Add a Course</a>
+                    <a class="nav-item nav-link" href="{% url 'gradetracker:addCourse' %}">Add a Course</a>
                 </div>
             {% else %}
                 <div>
                     <p><strong>Sign in to use stuff!</strong></p>
                 </div>
+            {% endif %}
         </form>
         <hr class="my-4">
         {% if user.is_authenticated %}

@@ -1,0 +1,64 @@
+{% extends 'gradetracker/template.html' %}
+{% load socialaccount %}
+{% providers_media_js %}
+{% block content %}
+<body>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}<br>
+    <form action = "{% url 'gradetracker:addCourse' %}" method = "post">
+    {% csrf_token %}
+        <div class = "tabbed">
+            <label class = "section">Add a course to your schedule</label>
+        </div>
+        <hr class="my-4">
+        <div class = "tabbed">
+            <div>
+                <input type="hidden" name="enrolled" value="False">
+                <input type="checkbox" id="enrolled" name="enrolled" value="True">
+                <label for="finished">Currently Enrolled</label>
+            </div>
+            <div>
+                <input type="hidden" name="verified" value="False">
+                <input type="checkbox" id="verified" name="verified" value="True">
+                <label for="verified">Class is on Lou's List</label>
+            </div>
+            <div>
+                <input type="hidden" name="included" value="False">
+                <input type="checkbox" id="included" name="included", value="True">
+                <label for="included">Class should be included in GPA calculation</label>
+            </div>
+            <br>
+        </div>
+        <div>
+            <div class="col-3">
+                <label for="courseTitle">Course Name</label>
+                <input type="text" class="form-control" id="courseTitle" name="courseTitle" required pattern=".*">
+            </div>
+            <br>
+            <div class="col-1">
+                <label for="credits">Credits</label>
+                <input type="text" class="form-control" id="credits" name="credits" required pattern="[0-9]\.+[0-9]" placeholder="Ex: 3.00" title="In format of X.X">
+            </div>
+            <br>
+            <div class="col-4">
+                <label for="email">Professor's Email</label>
+                <input type="text" class="form-control" id="email" name="email" required pattern="^.+@+.+\.+.+$" value = "" title = "At least one @ symbol, at least one . symbol, at least one character, before, after, and between each symbol">
+            </div>
+            <br>
+            <div class="col-2">
+                <label for="VAavg">Average from VAGrades</label>
+                <input type="text" class="form-control" id="VAavg"  name="VAavg" required pattern="[0-9]+\.[0-9][0-9]" placeholder="Ex: 4.00">
+            </div>
+            <br>
+            <div class="col-2">
+                <label for="VAavg">Target Grade (out of 100)</label>
+                <input type="text" class="form-control" id="goal"  name="goal" required pattern="[0-9]+\.[0-9][0-9]" placeholder="Ex: 95.00">
+            </div>
+            <br>
+            <div class="tabbed">
+                <button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to submit?')">Submit</button>
+            </div>
+        </div>
+    </form>
+</body>
+
+{% endblock %}
