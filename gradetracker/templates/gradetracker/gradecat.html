@@ -1,0 +1,36 @@
+{% extends 'gradetracker/template.html' %}
+{% load socialaccount %}
+{% providers_media_js %}
+{% block content %}
+<body>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}<br>
+    <form action = "{% url 'gradetracker:gradecat' %}" method = "post">
+        {% csrf_token %}
+        <div class = "tabbed">
+            <label class = "section">Add a Grade Category for a Course</label>
+        </div>
+        <div>
+            <div class="col-3">
+                <label for="courseTitle">Course Name</label>
+                <input type="text" class="form-control" id="courseTitle" name="courseTitle" required pattern=".*">
+            </div>
+            <br>
+            <div class="col-3">
+                <label for="name">Name of Grade Category</label>
+                <input type="text" class="form-control" id="name" name="name" required pattern=".*">
+            </div>
+            <br>
+            <div class="col-2">
+                <label for="weight">Weightage Towards Overall Grade</label>
+                <input type="text" class="form-control" id="weight"  name="weight" required pattern="[0-9]+\.[0-9][0-9]" placeholder="Ex: 15.00">
+                    </div>
+            <br>
+            <div class="tabbed">
+                <button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to submit?')">Submit</button>
+            </div>
+        </div>
+    </form>
+</body>
+
+{% endblock %}
+

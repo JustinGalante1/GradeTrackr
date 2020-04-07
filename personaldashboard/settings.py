@@ -141,6 +141,6 @@ AUTHENTICATION_BACKENDS = (
 #     django_heroku.settings(locals())
 
 SITE_ID = 1
-LOGIN_REDIRECT_URL = '/gradetracker/index'
+LOGIN_REDIRECT_URL = '/dashboard'
 LOGOUT_URL = "/"
 

@@ -1,18 +1,36 @@
 from django.test import TestCase
-from gradetracker.models import Student, Course, GradeCategory, Assignment, SingularGradeItem
+from gradetracker.models import Student, Course, GradeCategory, Assignment, SingularGradeItem, User
 
 class GradeTrackerTestCase(TestCase):
     def setUp(self):
         #need to settle some primary keys/identifiers before using this, must figure out user/student authentication model first
-        pass
+
+        # Keep a list of users existing in the database before the tests
+        self.users_before = list(User.objects.values_list('id', flat=True).order_by('id'))
+        print ("users before tests:", self.users_before)
+
+    def tearDown(self):
+        # Get the list of all users after the tests.
+        users_after = list(User.objects.values_list('id', flat=True).order_by('id'))
+        print ("users after tests:", users_after)
+ 
+        # Calculate the set difference.
+        users_to_remove = sorted(list(set(users_after) - set(self.users_before)))
+        print ("users to remove after tests:", users_to_remove)
+ 
+        # Delete that difference from the database.
+        User.objects.filter(id__in=users_to_remove).delete()
 
     def add_course_test(self):
         
 
     
     def test_set_some_default_grade_averages_to_a_course(self):
-        student1 = Student.objects.create()
-        class1 = Course.objects.create(name="APMA 3100: Probability", numOfCredits=3, studentItBelongsTo=student1)
+        # Create a user (and thus a student)
+        test_user = User.objects.create_user(username='testuser', password='12345')
+        student1 = Student.objects.all().filter(user=Student.objects.get(user=test_user))[0]
+
+        class1 = Course.objects.create(name="APMA 3100: Probability", number_Of_Credits=3, student_It_Belongs_To=student1)
         category1 = GradeCategory.objects.create(name="Exams",weightage=45, courseItBelongsTo=class1)
 
         gradesSoFar = [87,90,86,96]
@@ -28,7 +46,9 @@ class GradeTrackerTestCase(TestCase):
 
 
     def test_update_semester_GPA(self):
-        student1 = Student.objects.create()
+        # Create a user (and thus a student)
+        test_user = User.objects.create_user(username='testuser', password='12345')
+        student1 = Student.objects.all().filter(user=Student.objects.get(user=test_user))[0]
 
         SingularGradeItem.objects.create(gradePercentage=3.5, whichStudentsSemesterGPAisThis=student1)
         SingularGradeItem.objects.create(gradePercentage=3.7, whichStudentsSemesterGPAisThis=student1)
@@ -38,16 +58,22 @@ class GradeTrackerTestCase(TestCase):
 
 
     def test_this_course_belongs_to_this_student(self):
-        student1 = Student.objects.create()
-        class1 = Course.objects.create(name="APMA 3100: Probability", numOfCredits=3, studentItBelongsTo=student1)
+        # Create a user (and thus a student)
+        test_user = User.objects.create_user(username='testuser', password='12345')
+        student1 = Student.objects.all().filter(user=Student.objects.get(user=test_user))[0]
 
-        self.assertEqual(class1.studentItBelongsTo,student1)
+        class1 = Course.objects.create(name="APMA 3100: Probability", number_Of_Credits=3, student_It_Belongs_To=student1)
+
+        self.assertEqual(class1.student_It_Belongs_To,student1)
 
     def test_this_GradeCategory_belongs_to_this_class(self):
         semesterGPA = SingularGradeItem.objects.create(gradePercentage=3.5)
         cumulativeGPA = SingularGradeItem.objects.create(gradePercentage=3.5)
-        student1 = Student.objects.create()
-        class1 = Course.objects.create(name="APMA 3100: Probability", numOfCredits=3, studentItBelongsTo=student1)
+        # Create a user (and thus a student)
+        test_user = User.objects.create_user(username='testuser', password='12345')
+        student1 = Student.objects.all().filter(user=Student.objects.get(user=test_user))[0]
+
+        class1 = Course.objects.create(name="APMA 3100: Probability", number_Of_Credits=3, student_It_Belongs_To=student1)
         category1 = GradeCategory.objects.create(name="Exams",weightage=45, courseItBelongsTo=class1)
 
         self.assertEqual(category1.courseItBelongsTo,class1)

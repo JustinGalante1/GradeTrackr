@@ -3,23 +3,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-# new stuff
 from django.forms import ModelForm
 
 
-# new stuff
-
-# Create your models here.
-
-
-# HOW TO DEAL WITH LIST FIELDS (since django does not natively support a list/array data type) myModel.myList
-# =json.dumps([1,2,3])     to store into a model myListInPython = json.decode(myModel.myList)    to read from a
-# model, then append as necessary before storing back into model RULE: chronologically sorted from oldest to newest
-
-# Have to integrate a user model for Google Auth here? Of which Student is possibly subset
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True,)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    #cumulativeCredits = models.DecimalField(max_digits=4, decimal_places=1, null=True)
 
     def __str__(self):
         return self.user.username
@@ -62,8 +52,12 @@ class GradeCategory(models.Model):
 
     courseItBelongsTo = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="categories")
 
+    def __str__(self):
+        return self.name 
 
-# new stuff
+
+
+
 class GradeCategoryForm(ModelForm):
     class Meta:
         model = GradeCategory
@@ -77,7 +71,6 @@ class CourseForm(ModelForm):
                   'Average_From_VAgrades', 'name', 'number_Of_Credits', 'target_Grade', 'student_It_Belongs_To']
 
 
-# new stuff
 
 class SingularGradeItem(models.Model):
     gradePercentage = models.DecimalField(max_digits=5, decimal_places=2)

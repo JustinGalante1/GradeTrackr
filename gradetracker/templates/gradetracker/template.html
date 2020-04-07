@@ -8,6 +8,7 @@
     padding-left: 40px;
 }
 </style>
+<<<<<<< HEAD
 <div class = "jumbotron">
     <h1 class = "display-3" align = "center">Four80ty's Grade Tracker</h1>
     <p class = "lead" align = "center">You like what you see? >;]</p>
@@ -29,22 +30,40 @@
             {% endif %}
         </form>
         <hr class="my-4">
+=======
+
+<div class = "jumbotron" style="background-color: transparent; padding-top: 2%; padding-bottom: 0%; transition-duration: 1s;margin-bottom: 0;">
+    <a class="mainLogo" href="/"><h1 class = "display-5" align = "left" style="font-family: 'Source Sans Pro', sans-serif;"><b>Grade</b>Tracker</h1></a>
+    <p align = "left" style="color:#464646;padding-bottom: 0.5%;">by four80ty</p>
+    
+    <div style="padding-bottom: 2%;">
+
+>>>>>>> master
         {% if user.is_authenticated %}
             <form method = "post" action="{% url 'account_logout' %}">
                 {% csrf_token %}
                 {% if redirect_field_value %}
                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
                 {% endif %}
-                <button type="submit" class = "btn btn-info" onclick="return confirm('Are you sure you want to logout?')">Logout</button>
+
+
+                <button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to logout?')" id="logOutButton">&nbsp;<b><span class="ti-user" style="vertical-align: -1px;"></span>&nbsp;&nbsp;your account&nbsp;</b></button>
+
+                
+                <button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to logout?')" id="logOutButton">&nbsp;<b><span class="ti-close" style="vertical-align: -1.5px;"></span>&nbsp;&nbsp;logout&nbsp;</b></button>
+                
+                <a href="{% url 'gradetracker:add' %}" class="btn btn-primary" style="width: auto; border-radius: 99px;box-shadow: 0 5px 15px rgba(18, 73, 255, 0.4);float:right"><b>&nbsp;<span class="ti-plus" style="vertical-align: -1.85px;"></span>&nbsp;&nbsp;add another course&nbsp;</b></a>
+
             </form>
         {% else %}
-            <form>
-                <div class = "form-row">
-                    <a class="btn btn-info" href="{% provider_login_url 'google' %}">Login</a>
-                </div>
-            </form>
+        <form>
+            <div class = "form-row">
+                <a class="btn btn-info" href="{% provider_login_url 'google' %}" id="logInButton">Sign in with Google</a>
+            </div>
+        </form>
             {% endif %}
-    </nav>
+    </div>
+    
 </div>
 <div>
     {% block content %}
@@ -52,7 +71,9 @@
 </div>
 <br>
 
+<!--
 <div class = "page-footer">
     <p align = "center">Author: Four80ty</p>
     <p align = "center">Copyrighted Very Legally&copy;</p>
 </div>
+-->
