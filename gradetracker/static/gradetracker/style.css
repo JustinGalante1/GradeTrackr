@@ -14,6 +14,27 @@ a {
     color: #33cccc;
 }
 
+table {
+    border:solid #ececec 1px;
+	border-radius:15px;
+	margin-bottom: 2%;
+	overflow: hidden;
+	box-shadow: 0px 6px 12px 0px rgba(0,0,0,0.05);
+}
+
+td {
+	padding:2.5%;
+	background-color:#ffffff;
+	
+}
+
+th {
+	border-top: none;
+	padding:2%;
+	background-color:#f8f8f8;
+	border:solid #dfdfdf 1px;
+}
+
 h1 {
 	font-family: Ubuntu;
 }

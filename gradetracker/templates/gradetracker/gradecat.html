@@ -4,11 +4,11 @@
 {% block content %}
 <body>
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}<br>
-    {% if course_id %}
-    <form action = "{% url 'gradetracker:gradecat' course_id%}" method = "post">
+    {% if course.id %}
+    <form action = "{% url 'gradetracker:gradecat' course.id%}" method = "post">
         {% csrf_token %}
         <div class = "tabbed">
-            <label class = "section">Add a Grade Category for a Course</label>
+            <label class = "section">Add a grade category for {{ course.name }}</label>
         </div>
         <div>
 <!--            <div class="col-3">-->

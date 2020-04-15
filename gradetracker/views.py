@@ -98,13 +98,13 @@ def addAssignment(request, course_id=None):
                     name = request.POST.get('assignmentName')
                     percentage = request.POST.get('weight')
                     notification = request.POST.get('notify')
-                    gradeCatName = request.POST.get('categoryChoice')
+                    gradeCatID = request.POST.get('categoryChoice')
                     dueDate = request.POST.get('date')
                     new_assignment = Assignment()
                     new_assignment.name = name
                     new_assignment.gradePercentage = percentage
                     new_assignment.notifyStudentOrNot = notification
-                    new_assignment.gradeCategoryItBelongsTo = GradeCategory.objects.get(name=gradeCatName)
+                    new_assignment.gradeCategoryItBelongsTo = GradeCategory.objects.get(id=gradeCatID)
                     new_assignment.dueDate = dueDate
                     new_assignment.save()
                     getAverage(course_id)
@@ -194,13 +194,13 @@ def duplicate_course(request, course_id=None):
                     newGradecat.save()
                     assingmentsToDuplicate = category.assignments.all()
                     for assignment in assingmentsToDuplicate:
-                        new_assignment = Assignment(gradePercentage=assignment.gradePercentage, notifyStudentOrNot=assignment.notifyStudentOrNot, name=Assignment.name, dueDate=assignment.dueDate, gradeCategoryItBelongsTo=newGradecat)
+                        new_assignment = Assignment(gradePercentage=assignment.gradePercentage, notifyStudentOrNot=assignment.notifyStudentOrNot, name=assignment.name, dueDate=assignment.dueDate, gradeCategoryItBelongsTo=newGradecat)
                         new_assignment.save()
                             #getAverage(course_id)
 
         return CourseDashboard(request)
     
-    # otherwise, prompt the user to login
+    # otherwise, prompt the user to login.
     else:
         return redirect('gradetracker:index')
 

@@ -1,85 +1,71 @@
-{% extends 'gradetracker/template.html' %}
+{% extends 'gradetracker/templateForCourseOverview.html' %}
 {% block content %}
 {% load static %}
 {% load gradetracker_tags %}
-
-
-        
-
 <div class="container justify-content-center">
-  <div class="card text-center" style="width: auto" id="beautifiedCard">
-  <!-- Course Title -->
-  <div class="card-header">
-    <h4 class="card-title"><b>{{ course.name }}
-      {% if course.avgGrade.didGradeGoUp %}
-      <span style="float:right; color:green">{{ course.avgGrade.gradePercentage }}%</span>
-      {% else %}
-      <span style="float:right; color:red">{{ course.avgGrade.gradePercentage }}%</span>
-      {% endif %}</b></h4>
-  </div>
-  
-  <!-- Course Instructor Email -->
-  <h4 class="card-title">{{ course.Professor_Email }}</h4>
-  <!-- Is course verified? -->
-  {% if course.Verified_Class %}
-    <h4 class="card-title">Course is verified</h4>
-  {% else %}
-    <h4 class="card-title">Course is not verified</h4>
-  {% endif %}
-    <!--<ul>-->
   <div class="cardGrid">
-
-
+    <div class="card" style="width: auto; overflow: hidden;" id="beautifiedCard">
+      <div class="card-body" style="padding-bottom: 1.75%;background-color: #f7f7f7;">
+          <!-- List all the categories associated with that course -->
+        <h4 class="card-title" style="text-align: center;"><b>
+          To meet your target
+        </b></h4>
+        <p class="card-text" style="color:black; text-align: center;">TODO: Add curr grade, target, how to get there</p>
+        </div></div>
 <!-- If there is at least one category in the course -->
   {% if grade_categories %} 
-
     {% for category in grade_categories %}
-          
     <!--<li class="list-group-item">-->      
-        <div class="card" style="width: auto">
-            <div class="card-body" style="padding-bottom: 1.75%;">
-
+      <div class="card" style="width: auto; overflow: hidden;" id="beautifiedCard">
+            <div class="card-body" style="padding-bottom: 1.75%;background-color: #f7f7f7;">
                 <!-- List all the categories associated with that course -->
-
-              <h4 class="card-title"><b>{{ category.name }}</b></h4>
-              
+              <h4 class="card-title"><b>
+                {{ category.name }}
+                <span style="float:right; color: green">X%</span>
+              </b></h4>
+            <!--<p class="card-text" style="color:black; text-align: center;"> </p>-->  
+              <div style="text-align:center">
+              <a href="{% url 'gradetracker:addAssignment' course_id=course.id%}" class="btn btn-primary" style="width: 40%; border-radius: 99px;box-shadow: 0 5px 15px rgba(18, 73, 255, 0.4);">
+                <b>&nbsp;<span class="ti-plus" style="vertical-align: -1.85px;"></span>&nbsp;&nbsp;ADD AN ASSIGNMENT</a></b>
+              </div>
+              {% if category_assignments|get_item:category.name %}
+                <table style="margin-top: 2.5%;width:100%;text-align: center;">
+                  <tr style="padding:1%">
+                    <th>Name</th>
+                    <th>Due Date</th>
+                    <th>Grade</th>
+                    <th><span class="ti-more-alt" style="vertical-align: -1.85px;"></span></th>
+                  </tr>
+              {% endif %}
               {% for assignment in category_assignments|get_item:category.name %}
-              
               <!-- List of assignments associated with that course -->
-              <ul class="list-group">
-                <li class="list-group-item">{{ assignment.name }}</li>
-              </ul>
-
+                <!-- Button to add an assignment -->
+                  <tr>
+                    <td>{{ assignment.name }}</td>
+                    <td>{{ assignment.dueDate }}</td>
+                    <td>{{ assignment.gradePercentage|floatformat }}%</td>
+                    <td><span class="ti-pencil" style="vertical-align: -1.85px;">&nbsp;<span class="ti-bell" style="vertical-align: 1px;">
+                    <a href="{% url 'gradetracker:delete_assignment' assignment_id=assignment.id%}" onclick="return confirm('Are you sure you want to delete this assignment?')" id="miniButtonRed"><span class="ti-trash" style="vertical-align: 0.75px;"></span></a>
+                    </td>
+                  </tr>
               {% endfor %}
-
+            </table>
+              <div style="padding-top: 2%;">
+              <a href="{% url 'gradetracker:delete_category' category_id=category.id%}" onclick="return confirm('Are you sure you want to delete this grade category?')" id="miniButtonRed" style="vertical-align: 1px;"><span class="ti-trash"></span></a>
+              <a href="{% url 'gradetracker:addAssignment' course_id=course.id%}" id="miniButtons" style="vertical-align: 0.5px; padding-right: 1%;"><b><span class="ti-plus"></span></b></a>
+              <a href="" id="miniButtons" style="vertical-align: 0.5px; padding-right: 1%;"><b><span class="ti-pencil"></span></b></a>
+              <a href="{% url 'gradetracker:addAssignment' course_id=course.id%}" id="miniButtons" style="vertical-align: 0.5px; padding-right: 1%;"><b><span class="ti-reload"></span></b></a>
+              <span style="color:black; float: right;"><b>Worth {{ category.weightage|floatformat  }}%</b></span>
+            </div>
             </div>
           </div>
-
     <!--</li>-->
     {% endfor %}
-  
-
-
   <!-- If there are no grade categories associated with that course -->
   {% else %}
   <h4 class="card-title"><b>Add a grade category to start tracking your grades for {{ course.name }}</b></h4>
-
   {% endif %} 
-
             </div>
-    
     </ul>
-
-    <div class="card-footer">
-      <a href="/dashboard/"><div>
-        Return to dashboard.
-    </div></a>
-    </div>
-
 </div>
-
-</div>
-
-
-
 {% endblock content %}

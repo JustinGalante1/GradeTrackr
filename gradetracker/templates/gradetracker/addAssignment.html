@@ -4,11 +4,11 @@
 {% block content %}
 <body>
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}<br>
-    {% if course_id%}
-    <form action = "{% url 'gradetracker:addAssignment' course_id%}" method = "post">
+    {% if course.id%}
+    <form action = "{% url 'gradetracker:addAssignment' course.id%}" method = "post">
     {% csrf_token %}
         <div class = "tabbed">
-            <label class = "section">Add an assignment to a course</label>
+            <label class = "section">Add an assignment to {{ course.name }}</label>
         </div>
         <hr class="my-4">
         <div class = "tabbed">
@@ -38,7 +38,7 @@
                 <ul class = "list-group">
                     <label>Category it Belongs To</label>
                 {% for category in grade_categories %}
-                    <input type="radio" name="categoryChoice" id="choice{{ forloop.counter }}" value="{{category.name}}">
+                    <input type="radio" name="categoryChoice" id="choice{{ forloop.counter }}" value="{{category.id}}">
                     <label for="choice{{ forloop.counter }}" >{{ category.name }}</label><br>
                 {% endfor %}
                 </ul>
