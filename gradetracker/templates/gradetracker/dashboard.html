@@ -2,65 +2,302 @@
 {% block content %}
 {% load static %}
 
-
-
-        
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
         
+
+<div id ="overlay"></div>
 {% if courses_list %}
-<div class="container justify-content-center">
+<div class="m container justify-content-center" id="main">
 
-  <!--<a href="{% url 'gradetracker:add' %}" class="btn btn-primary" style="width: auto; border-radius: 99px;box-shadow: 0 5px 15px rgba(18, 73, 255, 0.4);"><b>&nbsp;<span class="ti-plus" style="vertical-align: -1.85px;"></span>&nbsp;&nbsp;add another course&nbsp;</b></a>-->
+
+
+   
+
+ <!-- new course modal-->
+   <div id="addNewCourse" class="w3-modal" style="z-index: 2;">
+        <div class="w3-modal-content w3-animate-top " style="border-radius: 15px;">
+          <div class="card scene_element scene_element--fadein" style="width: auto; overflow: hidden;" id="beautifiedCard">
+            <div class="card-body" style="padding-bottom: 1.75%;">
+        
+              <h3 class="card-title" style="text-align: center;"><b>
+                Add a Course to Your Schedule
+              </b></h3>
+              <p class="card-text" style="color:black; text-align: center;">
+                <form action = "{% url 'gradetracker:add' %}" method = "post">
+                {% csrf_token %}
+                <input type="hidden" name="included" value="True">
+                <div style="padding:2%">
+                <label for="courseTitle"><b>Course Name</b></label>
+                <input type="text" class="form-control" id="courseTitle" name="courseTitle" required pattern=".*" placeholder="PHYS 2415">
+                </div>
+    
+                <div style="padding:2%">
+                <label for="credits"><b>Credits</b></label>
+                <input class="form-control" type="number" value="3" id="credits" name="credits" min="1" max="6">
+                </div>
+
+                <div style="padding:2%">
+                <label for="goal">Target Grade (out of 100)</label>
+                <input type="number" class="form-control" id="goal" name="goal" required pattern="[0-9]+\.[0-9][0-9]" placeholder="Ex: 95.00" min="0.5" max="100" step="0.5">
+                </div>
+                
+                <input type="hidden" class="submitOrCancel" id="submitOrCancel" name="submitOrCancel" value="">
+                
+                <div style="text-align: center;">
+                <button type="submit" class="btn btn-info" style="margin-left:2%;margin-right:0.5%;margin-top:2%;background-color: rgb(27,27,27);border-style: none;border-radius: 20px;" onclick="enableEverything()"><b>ADD</b></button>
+                <button type="cancel" class="btn btn-danger" style="margin-top:2%;border-radius: 20px;background-color: #ff3737;border-style: none;" onclick="document.getElementById('addNewCourse').style.display='none';document.getElementById('overlay').style.display='none';cancelEverything()"><b>CANCEL</b></button>
+                </div>
+    
+                </form></p>
+              </div></div>
+        </div>
+      </div>
+      <!-- end new course modal-->
+
+
+      <!-- new grade category modal-->
+
+      {% for course in courses_list %}
+
+      <div id="{{course.id}}CATEGORY" class="w3-modal" style="z-index: 2;">
+        <div class="w3-modal-content w3-animate-top " style="border-radius: 15px;">
+          <div class="card scene_element scene_element--fadein" style="width: auto; overflow: hidden;" id="beautifiedCard">
+            <div class="card-body" style="padding-bottom: 1.75%;">
+        
+              <h3 class="card-title" style="text-align: center;"><b>
+                Add a Grade Category to {{course.name}}
+              </b></h3>
+              <p class="card-text" style="color:black; text-align: center;">
+                <form action = "{% url 'gradetracker:gradecat' course.id%}" method = "post">
+                {% csrf_token %}
+                <input type="hidden" name="included" value="True">
+                <div style="padding:2%">
+                <label for="name"><b>Name of Grade Category</b></label>
+                <input type="text" class="form-control" id="name" name="name" required pattern=".*" placeholder="Exams">
+                </div>
+    
+                <div style="padding:2%">
+                <label for="weight">% Weightage Towards Overall Grade</label>
+                <input type="number" class="form-control" id="weight"  name="weight" required pattern="[0-9]+\.[0-9][0-9]" placeholder="Ex: 15" max="99.99" min="1"> 
+                </div>
+
+                
+                <input type="hidden" class="submitOrCancel" id="submitOrCancel" name="submitOrCancel" value="">
+                
+                <div style="text-align: center;">
+                <button type="submit" class="btn btn-info" style="margin-left:2%;margin-right:0.5%;margin-top:2%;background-color: rgb(27,27,27);border-style: none;border-radius: 20px;" onclick="enableEverything()"><b>ADD</b></button>
+                <button type="cancel" class="btn btn-danger" style="margin-top:2%;border-radius: 20px;background-color: #ff3737;border-style: none;" onclick="document.getElementById('{{course.id}}CATEGORY').style.display='none';document.getElementById('overlay').style.display='none';cancelEverything()"><b>CANCEL</b></button>
+                </div>
+    
+                </form></p>
+              </div></div>
+        </div>
+      </div>
+
+      {% endfor %}
+
+      <!-- end new grade category modal-->
 
 
     <!--<ul>-->
         <div class="cardGrid">
+{% if showReportCardOrNot %}
+<!--DASHBOARD OVERVIEW CARD-->
+<div class="card scene_element scene_element--fadein" style="width: auto; float:left" id="beautifiedCard">
+  <div class="card-body" style="padding-bottom: 1.75%;">
+    <h4 class="card-title"><b>Your Report Card
+      
+      {% if not student.cumulativeGPA.gradePercentage == None %}
+              <div style="float:right">
+              {% if student.cumulativeGPA.didGradeGoUp %}
+              <span style="color:rgb(0, 165, 27);" class="fa fa-caret-up">
+              {% elif student.cumulativeGPA.didGradeGoUp == False %}
+              <span style="color:red;" class="fa fa-caret-down">
+              {% else %}
+              <span style="color:rgb(27,27,27);">
+              {% endif %}
+              </span>&nbsp;&nbsp;{{ student.cumulativeGPA.gradePercentage }} GPA
+              </div>
+      {% endif %}
+    
+    
+    </b></h4>
+    <p class="card-text" style="color:black; text-align: center;">
+      
+      
+      <table style="margin-top: 5%;width:100%;text-align: center;margin-bottom: 5%;">
+        <tr style="padding:1%">
+          <th>Class Name</th>
+          <th>Credits</th>
+          <th>Grade</th>
+        </tr>
+        {% for course in courses_list %}
+                  {% if not course.avgGrade == None and course.Include_In_GPA == True%}
+                  <tr>
+                  <td>{{course.name}}</td>
+                  <td>{{course.number_Of_Credits}}</td>
+                  <td><b>
+                  {% if course.avgGrade.didGradeGoUp %}
+                  <span style="color:rgb(0, 165, 27)"><span class="fa fa-caret-up"></span>&nbsp;{{ course.avgGrade.gradePercentage }}%</span>
+                  {% elif course.avgGrade.didGradeGoUp == None %}
+                  <span style="color:rgb(27,27,27)">{{ course.avgGrade.gradePercentage }}%</span>
+                  {% else %}
+                  <span style="color:red"><span class="fa fa-caret-down"></span>&nbsp;{{ course.avgGrade.gradePercentage }}%</span>
+                  {% endif %}
+                  {% endif %}</b></td>
+                </tr>
+      {% endfor %}
+      </table>
 
+      
+      
+    </p>
+    <span style="color:rgb(34, 34, 34); float: right;"><b>{{cum}} credits being tracked</b></span>
 
-          <!--DASHBOARD OVERVIEW CARD-->
-    <div class="card" style="width: auto; float:left" id="beautifiedCard">
-      <div class="card-body" style="padding-bottom: 1.75%;">
-        <h4 class="card-title"><b>At a glance<span style="float:right; color:green">X.X GPA</span></b></h4>
-        <p class="card-text" style="color:black; text-align: left;">
-          use this space for upcoming assignment due dates, gain/loss percent for classes, semester GPA,
+  </div>
+
+<!--END OF DASHBOARD OVERVIEW CARD--></div>
+{% endif %}
           
-        </p>
-        <span style="color:black; float: right;"><b>X.X credits being tracked</b></span>
-
-      </div>
-    </div>
-    <!--END OF DASHBOARD OVERVIEW CARD-->
 
 
 
     {% for course in courses_list %}
+
+    <div id="{{course.id}}ASS" class="w3-modal" style="z-index: 2;">
+      <div class="w3-modal-content w3-animate-top " style="border-radius: 15px;">
+        <div class="card scene_element scene_element--fadein" style="width: auto; overflow: hidden;" id="beautifiedCard">
+          <div class="card-body" style="padding-bottom: 1.75%;">
+      
+            
+      
+            <h3 class="card-title" style="text-align: center;"><b>
+              Add an Assignment
+            </b></h3>
+            <p class="card-text" style="color:black; text-align: center;">
+              <form action = "{% url 'gradetracker:addAssignment' course.id%}" method = "post">
+              {% csrf_token %}
+  
+              <div style="padding:2%">
+              <label for="assignmentName"><b>Name</b></label>
+              <input type="text" class="form-control" id="assignmentName" name="assignmentName" required pattern=".*" placeholder="Quiz 3">
+              </div>
+  
+              <div style="padding:2%">
+              <label for="weight"><b>% Grade Earned</b></label>
+              <input type="number" class="form-control" id="weight" name="weight" required pattern="[0-9]+\.+[0-9][0-9]" placeholder="Ex: 81" title="In format of XX.XX" min="1" max="100" step="0.01">
+              </div>
+              
+              <div style="padding:2%">
+              <label><b>Category it Belongs To</b></label><br/>
+              {% for key, value in coursesAndTheirCategories.items %}
+                {% if key == course %}
+                {% for category in value %}
+                    <input type="radio" name="categoryChoice" id="choice{{ forloop.counter }}" value="{{category.id}}">
+                    <label for="choice{{ forloop.counter }}" >{{ category.name }}</label><br>
+                {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </div>
+              <input type="hidden" class="submitOrCancel" id="submitOrCancel" name="submitOrCancel" value="">
+              
+              <div style="text-align: center;">
+              <button type="submit" class="btn btn-info" style="margin-left:2%;margin-right:0.5%;margin-top:2%;background-color: rgb(27,27,27);border-style: none;border-radius: 20px;" onclick="enableEverything()"><b>ADD</b></button>
+              <button type="cancel" class="btn btn-danger" style="margin-top:2%;border-radius: 20px;background-color: #ff3737;border-style: none;" onclick="document.getElementById('{{course.id}}ASS').style.display='none';document.getElementById('overlay').style.display='none';cancelEverything()"><b>CANCEL</b></button>
+              </div>
+  
+              </form></p>
+            </div></div>
+      </div>
+    </div>
         
         <!--<li class="list-group-item">-->      
-            <div class="card" style="width: auto" id="beautifiedCard">
+            <div class="card scene_element scene_element--fadein" style="width: auto" id="beautifiedCard">
                 <div class="card-body" style="padding-bottom: 1.75%;">
                     <!-- List all the courses associated with a user -->
-                    <a href="{% url 'gradetracker:course_overview' course_id=course.id%}" class="mainLogo"> <h4 class="card-title"><b>{{ course.name }}
+                    <a href="{% url 'gradetracker:course_overview' course_id=course.id%}" class="mainLogo"> <h4 class="card-title" style="color:rgb(29, 29, 29)"><b>{{ course.name }}
+                      {% if course.Verified_Class %}
+                       <span id="verification" class="rotunda" style="vertical-align: -1px;"></span>
+                       {% endif %}
                       
+                      {% if not course.avgGrade == None %}
+                      <div style="float:right">
                       {% if course.avgGrade.didGradeGoUp %}
-                      <span style="float:right; color:green">{{ course.avgGrade.gradePercentage }}%</span>
+                      <span class="fa fa-caret-up" style="color:rgb(0, 165, 27);vertical-align: 1px;" title="Grade increased since last time"></span><span style="color:rgb(0, 165, 27);">
                       {% else %}
-                      <span style="float:right; color:red">{{ course.avgGrade.gradePercentage }}%</span>
+                      <span class="fa fa-caret-down" style="color:red;vertical-align: 1px;" title="Grade decreased since last time"></span><span style="color:red;">
                       {% endif %}
+                    &nbsp;{{ course.avgGrade.gradePercentage }}%</span>
+                  </div>
+                  {% endif %}
                     </b></h4></a>
-                  <p class="card-text" style="color:black; text-align: center;">
+
+
                     
-                    <!--do not uncomment, we are not ready for this monstrosity<a href="" data-modal="#modal" class="modal__trigger" >add a grade category</a>-->
-                    <a class="nav-item nav-link" href="{% url 'gradetracker:gradecat' course_id=course.id%}">Add a Grade Category</a>
-                    <a class="nav-item nav-link" href="{% url 'gradetracker:addAssignment' course_id=course.id%}">Add an assignment</a>
-                    TODO restyle above links
-                  </p>
+
+
+                  <p class="card-text" style="color:black; text-align: center;">
+
+
+                    <div style="text-align: center;padding-bottom: 3%;padding-top: 2%;">
+
+                      <a onclick="document.getElementById('overlay').style.display='block';document.getElementById('{{course.id}}CATEGORY').style.display='block';" class="btn btn-primary scene_element scene_element--fadein" style="color:white;border-radius: 99px;box-shadow: 0 5px 15px rgba(18, 73, 255, 0.4);font-size: small;"><b>&nbsp;<span class="ti-plus" style="vertical-align: -1.85px;"></span>&nbsp;&nbsp;ADD A CATEGORY&nbsp;</b></a>
+    
+                      &nbsp;
+                      <a onclick="document.getElementById('overlay').style.display='block';document.getElementById('{{course.id}}ASS').style.display='block';" class="btn btn-primary" style="border-radius: 99px;box-shadow: 0 5px 15px rgba(18, 73, 255, 0.4);color:white;font-size: small;">
+                        <b>&nbsp;<span class="ti-plus" style="vertical-align: -1.85px;"></span>&nbsp;&nbsp;ADD A GRADED ITEM</a></b>
+                      
+                    
+                    </div>
+
+                {% for key, value in coursesAndTheirCategories.items %}
+                {% if key == course %}
+                <a href="{% url 'gradetracker:course_overview' course_id=course.id%}" class="mainLogo">
+                <table style="width:100%;text-align: center;margin-bottom: 5%;">
+                  <tr style="padding:1%">
+                    <th>Category</th>
+                    <th>Weightage</th>
+                    <th>Grade</th>
+                  </tr> <!--should only run once, only one time will the course == key (theoretically)-->
+                {% for category in value %}
+                            <tr>
+                            <td>{{category.name}}</td>
+                            <td>{{category.weightage|floatformat}}%</td>
+                            <td><b>
+                            {% if category.avgCategoryGrade.didGradeGoUp %}
+                            <span style="color:rgb(0, 165, 27)"><span class="fa fa-caret-up"></span>&nbsp;{{ category.avgCategoryGrade.gradePercentage }}%</span>
+                            {% elif category.avgCategoryGrade.didGradeGoUp == None %}
+                            <span style="color:rgb(27,27,27)">{{ category.avgCategoryGrade.gradePercentage }}%</span>
+                            {% else %}
+                            <span style="color:red"><span class="fa fa-caret-down"></span>&nbsp;{{ category.avgCategoryGrade.gradePercentage }}%</span></b>
+                            {% endif %}
+                            </td>
+                          </tr>
+                {% endfor %}
+                </table>
+              </a>
+                {% endif %}
+                {% endfor %}
+
+                
+              </p>
+                  
+              
+
+                  
 
 
                   <a href="{% url 'gradetracker:delete_course' course_id=course.id%}" onclick="return confirm('Are you sure you want to delete this course?')" id="miniButtonRed"><span class="ti-trash"></span></a>
                   <a href="{% url 'gradetracker:duplicate_course' course_id=course.id%}" onclick="" id="miniButtons"><span class="ti-layers"></span></a>
                   <a href="{% url 'gradetracker:course_overview' course_id=course.id%}" onclick="" id="miniButtons" style="vertical-align: 1px; padding-right: 1%;"><span class="ti-new-window"></span></a>
+                      
+                  <label class="switch" style="vertical-align: 18.5px;margin-left: 1.25%;">
+                    <input type="checkbox" onclick="calc('{{course.id}}','{{course.Include_In_GPA}}');" {% if course.Include_In_GPA %} checked{% endif %}>
+                    <span class="slider round"></span>
+                  </label><span style="font-size: 0.4em;vertical-align: 2.75px;">&nbsp;&nbsp;&nbsp;<b>COUNT IN REPORT CARD</b></span>
 
-                  <span style="color:black; float: right;"><b>{{ course.number_Of_Credits|floatformat }} credits</b></span>
+                  <span style="color:rgb(32, 32, 32); float: right;"><b>{{ course.number_Of_Credits|floatformat }} credits</b></span>
 
                 </div>
               </div>
@@ -78,8 +315,8 @@
 {% else %}
 <div>
 <p> <img src = "{% static 'gradetracker/addcourse.png' %}" width="25%" style="margin-top: 4%;margin-right:8%;margin-left:8%;float: right;"><br/>
-    <h1 style="color: rgb(110, 72, 128);margin-top: 4%;margin-left: 6%;font-size: 5vw;line-height: 130%;">Get started tracking your academic performance.</h1>
-    <a href="{% url 'gradetracker:add' %}" class="addCourseButton" style="margin-left: 6%;margin-top:2%"><b>add course&nbsp;&nbsp;<span class="ti-hand-point-right" style="vertical-align: -1px;"></span></b></a>
+    <h1 style="color: rgb(51, 51, 51);margin-top: 0%;margin-left: 6%;font-size: 5vw;line-height: 130%;font-family: Source Sans Pro;">Get started tracking your academic performance.</h1>
+    <a href="{% url 'gradetracker:add' %}" class="addCourseButton" style="margin-left: 6%;margin-top:4%"><b>ADD COURSE&nbsp;&nbsp;<span class="ti-hand-point-right" style="vertical-align: -1px;"></span></b></a>
 
 </p>
 </div>
@@ -88,213 +325,46 @@
 
 {% endif %}
 
-<div id="modal" class="modal modal__bg" role="dialog" aria-hidden="true">
-    <div class="modal__dialog" > 
-    <div class="modal__content">
-    <h1>Modal</h1>
-    <p></p>
-    
-    <a href="" class="modal__close demo-close">
-    close
-    </a>
-    </div>
-    </div>
-    </div>
 
-    <!--below code from https://codepen.io/ettrics/pen/Jdjdzp-->
     <script>
-        var Modal = function () {
+      function calc(coursePassedIn,shouldIncludeInGPA)
+{
+  $.ajax({
+        type:'POST',
+        url:'{% url "gradetracker:gpaInclude" %}',
+        data:{
+          csrfmiddlewaretoken:'{{ csrf_token }}',
+          courseToAffect: coursePassedIn,
+            
+        },
+        success:function(json){
+            window.location.reload()
+        },
+        error : function(xhr,errmsg,err) {
+        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+    }
+    });
+}
+
+
+function cancelEverything() {
+  var formsToDisable = document.getElementsByClassName("submitOrCancel");
+  var x;
+  for (x in formsToDisable) {
+    formsToDisable[x].value=0;
+  }
+}
+
+function enableEverything() {
+  var formsToEnable = document.getElementsByClassName("submitOrCancel");
+  var x;
+  for (x in formsToEnable) {
+    formsToEnable[x].value=1;
+  }
+}
+
+
         
-          var trigger = $qsa('.modal__trigger'); // what you click to activate the modal
-          var modals = $qsa('.modal'); // the entire modal (takes up entire window)
-          var modalsbg = $qsa('.modal__bg'); // the entire modal (takes up entire window)
-          var content = $qsa('.modal__content'); // the inner content of the modal
-          var closers = $qsa('.modal__close'); // an element used to close the modal
-          var w = window;
-          var isOpen = false;
-          var contentDelay = 400; // duration after you click the button and wait for the content to show
-          var len = trigger.length;
-        
-          // make it easier for yourself by not having to type as much to select an element
-          function $qsa(el) {
-            return document.querySelectorAll(el);
-          }
-        
-          var getId = function (event) {
-        
-            event.preventDefault();
-            var self = this;
-            // get the value of the data-modal attribute from the button
-            var modalId = self.dataset.modal;
-            var len = modalId.length;
-            // remove the '#' from the string
-            var modalIdTrimmed = modalId.substring(1, len);
-            // select the modal we want to activate
-            var modal = document.getElementById(modalIdTrimmed);
-            // execute function that creates the temporary expanding div
-            makeDiv(self, modal);
-          };
-        
-          var makeDiv = function (self, modal) {
-        
-            var fakediv = document.getElementById('modal__temp');
-        
-            /**
-                                                                   * if there isn't a 'fakediv', create one and append it to the button that was
-                                                                   * clicked. after that execute the function 'moveTrig' which handles the animations.
-                                                                   */
-        
-            if (fakediv === null) {
-              var div = document.createElement('div');
-              div.id = 'modal__temp';
-              self.appendChild(div);
-              moveTrig(self, modal, div);
-            }
-          };
-        
-          var moveTrig = function (trig, modal, div) {
-            var trigProps = trig.getBoundingClientRect();
-            var m = modal;
-            var mProps = m.querySelector('.modal__content').getBoundingClientRect();
-            var transX, transY, scaleX, scaleY;
-            var xc = w.innerWidth / 2;
-            var yc = w.innerHeight / 2;
-        
-            // this class increases z-index value so the button goes overtop the other buttons
-            trig.classList.add('modal__trigger--active');
-        
-            // these values are used for scale the temporary div to the same size as the modal
-            scaleX = mProps.width / trigProps.width;
-            scaleY = mProps.height / trigProps.height;
-        
-            scaleX = scaleX.toFixed(3); // round to 3 decimal places
-            scaleY = scaleY.toFixed(3);
-        
-        
-            // these values are used to move the button to the center of the window
-            transX = Math.round(xc - trigProps.left - trigProps.width / 2);
-            transY = Math.round(yc - trigProps.top - trigProps.height / 2);
-        
-            // if the modal is aligned to the top then move the button to the center-y of the modal instead of the window
-            if (m.classList.contains('modal--align-top')) {
-              transY = Math.round(mProps.height / 2 + mProps.top - trigProps.top - trigProps.height / 2);
-            }
-        
-        
-            // translate button to center of screen
-            trig.style.transform = 'translate(' + transX + 'px, ' + transY + 'px)';
-            trig.style.webkitTransform = 'translate(' + transX + 'px, ' + transY + 'px)';
-            // expand temporary div to the same size as the modal
-            div.style.transform = 'scale(' + scaleX + ',' + scaleY + ')';
-            div.style.webkitTransform = 'scale(' + scaleX + ',' + scaleY + ')';
-        
-        
-            window.setTimeout(function () {
-              window.requestAnimationFrame(function () {
-                open(m, div);
-              });
-            }, contentDelay);
-        
-          };
-        
-          var open = function (m, div) {
-        
-            if (!isOpen) {
-              // select the content inside the modal
-              var content = m.querySelector('.modal__content');
-              // reveal the modal
-              m.classList.add('modal--active');
-              // reveal the modal content
-              content.classList.add('modal__content--active');
-        
-              /**
-                                                                * when the modal content is finished transitioning, fadeout the temporary
-                                                                * expanding div so when the window resizes it isn't visible ( it doesn't
-                                                                * move with the window).
-                                                                */
-        
-              content.addEventListener('transitionend', hideDiv, false);
-        
-              isOpen = true;
-            }
-        
-            function hideDiv() {
-              // fadeout div so that it can't be seen when the window is resized
-              div.style.opacity = '0';
-              content.removeEventListener('transitionend', hideDiv, false);
-            }
-          };
-        
-          var close = function (event) {
-        
-            event.preventDefault();
-            event.stopImmediatePropagation();
-        
-            var target = event.target;
-            var div = document.getElementById('modal__temp');
-        
-            /**
-                                                               * make sure the modal__bg or modal__close was clicked, we don't want to be able to click
-                                                               * inside the modal and have it close.
-                                                               */
-        
-            if (isOpen && target.classList.contains('modal__bg') || target.classList.contains('modal__close')) {
-        
-              // make the hidden div visible again and remove the transforms so it scales back to its original size
-              div.style.opacity = '1';
-              div.removeAttribute('style');
-        
-              /**
-                                            * iterate through the modals and modal contents and triggers to remove their active classes.
-                                               * remove the inline css from the trigger to move it back into its original position.
-                                            */
-        
-              for (var i = 0; i < len; i++) {
-                modals[i].classList.remove('modal--active');
-                content[i].classList.remove('modal__content--active');
-                trigger[i].style.transform = 'none';
-                trigger[i].style.webkitTransform = 'none';
-                trigger[i].classList.remove('modal__trigger--active');
-              }
-        
-              // when the temporary div is opacity:1 again, we want to remove it from the dom
-              div.addEventListener('transitionend', removeDiv, false);
-        
-              isOpen = false;
-        
-            }
-        
-            function removeDiv() {
-              setTimeout(function () {
-                window.requestAnimationFrame(function () {
-                  // remove the temp div from the dom with a slight delay so the animation looks good
-                  div.remove();
-                });
-              }, contentDelay - 50);
-            }
-        
-          };
-        
-          var bindActions = function () {
-            for (var i = 0; i < len; i++) {
-              trigger[i].addEventListener('click', getId, false);
-              closers[i].addEventListener('click', close, false);
-              modalsbg[i].addEventListener('click', close, false);
-            }
-          };
-        
-          var init = function () {
-            bindActions();
-          };
-        
-          return {
-            init: init };
-        
-        
-        }();
-        
-        Modal.init();
-        //# sourceURL=pen.js
             </script>
  
         

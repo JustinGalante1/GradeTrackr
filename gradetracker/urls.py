@@ -8,6 +8,7 @@ urlpatterns = [
     #path('home', personaldashboard.views.HomeView.as_view(), name="home"),
     path('index', views.IndexView.as_view(), name='index'),
     path('add', views.add, name='add'),
+    path('verify_course', views.verify_course_and_get_avg, name='verify_course'),
     path('test/', views.TestView.as_view(), name='test'),
     path('dashboard/', views.CourseDashboard, name='dashboard'),
     path('', views.SignIn, name='signin'),
@@ -19,5 +20,8 @@ urlpatterns = [
     re_path(r'^addAssignment/(?P<course_id>\d+)/$', views.addAssignment, name='addAssignment'),
     re_path(r'^gradecat/(?P<course_id>\d+)/$', views.gradecat, name='gradecat'),
     re_path(r'^delete-category/(?P<category_id>\d+)/$', views.delete_category, name='delete_category'),
-    re_path(r'^delete-assignment/(?P<assignment_id>\d+)/$', views.delete_assignment, name='delete_assignment')
+    re_path(r'^delete-assignment/(?P<assignment_id>\d+)/$', views.delete_assignment, name='delete_assignment'),
+    re_path(r'^gpaInclude/', views.gpaInclude, name='gpaInclude'),
+    re_path(r'^edit_assignment/(?P<assignment_id>\d+)/$', views.edit_assignment, name='edit_assignment'),
+
 ]

@@ -1,15 +1,25 @@
 {% load static %}
 {% load socialaccount %}
 {% providers_media_js %}
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="{% static 'gradetracker/style.css' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="{% static 'gradetracker/smoothState.js' %}"></script>
+<script src="{% static 'gradetracker/smoothLoad.js' %}"></script>
+
 <style>
 .tabbed {
     padding-left: 40px;
 }
 </style>
 
-<div class = "jumbotron" style="background-color: transparent; padding-top: 2%; padding-bottom: 0%; transition-duration: 1s;margin-bottom: 0;">
+<div id="overlay"></div>
+<div class="m" id="main">
+<div class = "jumbotron scene_element2 scene_element2--fadein" style="background-color: transparent; padding-top: 2%; padding-bottom: 0%; transition-duration: 1s;margin-bottom: 0;">
+
     <a class="mainLogo" href="/"><h1 class = "display-5" align = "left" style="font-family: 'Source Sans Pro', sans-serif;"><b>Grade</b>Tracker</h1></a>
     <p align = "left" style="color:#464646;padding-bottom: 0.5%;">by four80ty</p>
     
@@ -23,12 +33,12 @@
                 {% endif %}
 
 
-                <button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to logout?')" id="logOutButton">&nbsp;<b><span class="ti-user" style="vertical-align: -1px;"></span>&nbsp;&nbsp;your account&nbsp;</b></button>
+                <!--<button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to logout?')" id="accountButton">&nbsp;<b><span class="ti-user" style="vertical-align: -1px;"></span>&nbsp;&nbsp;your account&nbsp;</b></button>-->
 
                 
-                <button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to logout?')" id="logOutButton">&nbsp;<b><span class="ti-close" style="vertical-align: -1.5px;"></span>&nbsp;&nbsp;logout&nbsp;</b></button>
+                <button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to logout?')" id="logOutButton">&nbsp;<b><span class="ti-close" style="vertical-align: -1.5px;"></span>&nbsp;&nbsp;LOGOUT&nbsp;</b></button>
                 
-                <a href="{% url 'gradetracker:add' %}" class="btn btn-primary" style="width: auto; border-radius: 99px;box-shadow: 0 5px 15px rgba(18, 73, 255, 0.4);float:right"><b>&nbsp;<span class="ti-plus" style="vertical-align: -1.85px;"></span>&nbsp;&nbsp;add another course&nbsp;</b></a>
+                <a onclick="document.getElementById('addNewCourse').style.display='block';document.getElementById('overlay').style.display='block';" class="btn btn-primary" style="color:white;width: auto; border-radius: 99px;box-shadow: 0 5px 15px rgba(18, 73, 255, 0.4);float:right"><b>&nbsp;<span class="ti-plus" style="vertical-align: -1.85px;"></span>&nbsp;&nbsp;ADD A COURSE&nbsp;</b></a>
 
             </form>
         {% else %}
@@ -41,15 +51,9 @@
     </div>
     
 </div>
+</div>
 <div>
     {% block content %}
     {% endblock %}
 </div>
 <br>
-
-<!--
-<div class = "page-footer">
-    <p align = "center">Author: Four80ty</p>
-    <p align = "center">Copyrighted Very Legally&copy;</p>
-</div>
--->

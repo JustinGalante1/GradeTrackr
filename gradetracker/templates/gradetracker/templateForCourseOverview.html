@@ -3,24 +3,52 @@
 {% providers_media_js %}
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="{% static 'gradetracker/style.css' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="{% static 'gradetracker/smoothState.js' %}"></script>
+<script src="{% static 'gradetracker/smoothLoad.js' %}"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
 <style>
 .tabbed {
     padding-left: 40px;
 }
 </style>
 
-<div class = "jumbotron" style="background-color: transparent; padding-top: 2%; padding-bottom: 0%; transition-duration: 1s;margin-bottom: 0;">
-    <a class="mainLogo" href="/"><h2 align="left"><b>{{course}}</b></h2></a>
-    <p align = "left" style="color:#2c2c2c;padding-bottom: 0.5%;line-height: 1.8;"><b>
-        <span class="ti-receipt" style="vertical-align: -2px;"></span>&nbsp;&nbsp;{{course.number_Of_Credits}} credits<br />
-        <span class="ti-email" style="vertical-align: -2px;"></span>&nbsp;&nbsp;{{ course.Professor_Email }}<br />
-        {% if course.Verified_Class %}<span class="ti-face-smile" style="vertical-align: -1px;"></span>&nbsp;&nbsp;Verified Course<br />{% endif %}
-        <span class="ti-bar-chart" style="vertical-align: -0.75px;"></span>&nbsp;&nbsp;69% Average Grade (from VAgrades.com) <br />
+<div class="m" id="main">
+<div class = "jumbotron scene_element2 scene_element2--fadein" style="background-color: transparent; padding-top: 2%; padding-bottom: 0%; transition-duration: 1s;margin-bottom: 0;display: block;">
+    <a class="mainLogo" href="/"><h1 align="left"><b>{{course}}</b></h1></a>
+
+    <div style="color:#2c2c2c;padding-bottom: 0.5%;line-height: 1.8;float:left;"><b>
+        <span class="ti-receipt" style="vertical-align: -2px;width:200px"></span>&nbsp;&nbsp;{{course.number_Of_Credits}} credits<br />
+        <!--<span class="ti-email" style="vertical-align: -2px;"></span>&nbsp;&nbsp;{{ course.Professor_Email }}<br />-->
+        {% if course.Verified_Class %}<span class="rotunda2" style="vertical-align: -1px;"></span>&nbsp;&nbsp;Verified UVA Course<br />
+        {% endif %}
+
+        {% if course.Average_From_VAgrades %}<span class="ti-bar-chart" style="vertical-align: -0.5px;"></span>&nbsp;&nbsp;{{ course.Average_From_VAgrades }}% Average Grade <a href= {{ va_grades_link }} target="_blank" rel="noopener noreferrer" style="color:rgb(95, 95, 95)"><u>(VAgrades.com)</u></a>
+        {% endif %}
+        
     </b>
-    </p>
+    </div>
     
+    <div style="float:right;margin-top: -1.75%;"><b>
+        {% if not course.avgGrade == None %}
+                      <div style="float:right;font-size: 3.55em;">
+                      {% if course.avgGrade.didGradeGoUp %}
+                      <span style="color:rgb(0, 165, 27);" class="fa fa-caret-up">
+                      {% else %}
+                      <span style="color:red;" class="fa fa-caret-down">
+                      {% endif %}
+                    </span>&nbsp;&nbsp;{{ course.avgGrade.gradePercentage }}%
+                  </div>
+                  {% endif %}
+        <br/>
+    </b></div> 
     
-    <div style="padding-bottom: 2%;">
+    <br /><br /><br /><br />
+</div>
+    
+    <div style="padding-bottom: 2%;display: block;">
 
         {% if user.is_authenticated %}
             <form method = "post" action="{% url 'account_logout' %}">
@@ -32,13 +60,11 @@
 
                 
 
-                <a href="/dashboard/" class="btn btn-primary" style="width: auto; border-radius: 99px;background-color:rgb(27, 27, 27);box-shadow: 0px 3px 10px rgba(0,0,0,0.15);border-style: none;">
+                <a href="/dashboard/" class="btn btn-primary scene_element scene_element--fadein" style="width: auto; border-radius: 99px;background-color:rgb(27, 27, 27);box-shadow: 0px 3px 10px rgba(0,0,0,0.15);border-style: none;margin-left: 2%;">
                 <b>&nbsp;<span class="ti-arrow-left" style="vertical-align: -1.5px;"></span>&nbsp;&nbsp;BACK TO DASHBOARD&nbsp;</a></b>
 
-                <!--
-                <button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to logout?')" id="logOutButton">&nbsp;<b><span class="ti-close" style="vertical-align: -1.5px;"></span>&nbsp;&nbsp;logout&nbsp;</b></button>-->
-                
-                <a href="{% url 'gradetracker:gradecat' course_id=course.id%}" class="btn btn-primary" style="width: auto; border-radius: 99px;box-shadow: 0 5px 15px rgba(18, 73, 255, 0.4);float:right"><b>&nbsp;<span class="ti-plus" style="vertical-align: -1.85px;"></span>&nbsp;&nbsp;ADD ANOTHER GRADE CATEGORY&nbsp;</b></a>
+            
+                <a onclick="document.getElementById('overlay').style.display='block';document.getElementById('{{course.id}}CATEGORY').style.display='block';" class="btn btn-primary scene_element scene_element--fadein" style="color:white;width: auto; border-radius: 99px;box-shadow: 0 5px 15px rgba(18, 73, 255, 0.4);float:right; margin-right: 2%;"><b>&nbsp;<span class="ti-plus" style="vertical-align: -1.85px;"></span>&nbsp;&nbsp;ADD A GRADE CATEGORY&nbsp;</b></a>
 
             </form>
         {% else %}
@@ -49,8 +75,8 @@
         </form>
             {% endif %}
     </div>
-    
-</div>
+  </div>
+
 <div>
     {% block content %}
     {% endblock %}

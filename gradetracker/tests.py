@@ -1,5 +1,6 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from gradetracker.models import Student, Course, GradeCategory, Assignment, SingularGradeItem, User
+import gradetracker.views 
 
 class GradeTrackerTestCase(TestCase):
     def setUp(self):
@@ -75,6 +76,57 @@ class GradeTrackerTestCase(TestCase):
 
         self.assertEqual(category1.courseItBelongsTo,class1)
 
+    # def test_this_student_averageGPA_when_assignments_added(self):
+
+    #     test_user = User.objects.create_user(username='testuser', password='12345')
+    #     student1 = Student.objects.all().filter(user=Student.objects.get(user=test_user))[0]
+
+    #     class1 = Course.objects.create(name="ECON3020", number_Of_Credits=3, student_It_Belongs_To=student1)
+    #     category1 = GradeCategory.objects.create(name="Exams",weightage=50, courseItBelongsTo=class1)
+    #     category2 = GradeCategory.objects.create(name="Homework",weightage=50, courseItBelongsTo=class1)
+    #     assignment1 = Assignment.objects.create(name="Exam 1", gradePercentage=80,gradeCategoryItBelongsTo=category1)
+    #     assignment2 = Assignment.objects.create(name="Exam 2", gradePercentage=90,gradeCategoryItBelongsTo=category1)
+    #     assignment3 = Assignment.objects.create(name="HW 1", gradePercentage=100,gradeCategoryItBelongsTo=category2)
+
+    #     # Update GPA
+    #     # student1.cumulativeCredits += 3
+    #     gradetracker.views.getAverage(class1.id)
+    #     gradetracker.views.update_student_numCredits(student1.user.id)
+
+    #     gradetracker.views.update_student_GPA(student1.user.id)
+
+    #     expected_cumulativeGPA1 = SingularGradeItem.objects.create(gradePercentage=3.7, didGradeGoUp = True)
+        
+    #     print("student1:", student1)
+    #     print("student1.cumulativeCredits :", student1.cumulativeCredits)
+    #     print("student1.cumulativeGPA :", student1.cumulativeGPA)
+    #     print("student1.cumulativeGPA.gradePercentage :", student1.cumulativeGPA.gradePercentage)
+    #     self.assertEqual(student1.cumulativeGPA.gradePercentage, expected_cumulativeGPA1.gradePercentage)
+    #     self.assertEqual(student1.cumulativeGPA.didGradeGoUp, expected_cumulativeGPA1.didGradeGoUp)
+
+
+    #     class2 = Course.objects.create(name="ECON3720", number_Of_Credits=4, student_It_Belongs_To=student1)
+    #     category3 = GradeCategory.objects.create(name="Quizzes",weightage=60, courseItBelongsTo=class2)
+    #     category4 = GradeCategory.objects.create(name="Problem Sets",weightage=40, courseItBelongsTo=class2)
+    #     assignment4 = Assignment.objects.create(name="Quiz 1", gradePercentage=80,gradeCategoryItBelongsTo=category3)
+    #     assignment5 = Assignment.objects.create(name="Quiz 2", gradePercentage=90,gradeCategoryItBelongsTo=category3)
+    #     assignment6 = Assignment.objects.create(name="Problem Set 1", gradePercentage=70,gradeCategoryItBelongsTo=category4)
+    #     assignment6 = Assignment.objects.create(name="Problem Set 2", gradePercentage=90,gradeCategoryItBelongsTo=category4)
+
+
+    #     # Add some classes and update GPA again
+    #     # student1.cumulativeCredits += 4
+    #     gradetracker.views.getAverage(class2.id)
+    #     gradetracker.views.update_student_numCredits(student1.user.id)
+
+    #     gradetracker.views.update_student_GPA(student1.user.id)
+    #     expected_cumulativeGPA2 = SingularGradeItem.objects.create(gradePercentage=3.7, didGradeGoUp = False)
+
+    #     self.assertEqual(student1.cumulativeGPA.gradePercentage, expected_cumulativeGPA2.gradePercentage)
+    #     self.assertEqual(student1.cumulativeGPA.didGradeGoUp, expected_cumulativeGPA2.didGradeGoUp)
+
+
+    #     self.assertEqual(category1.courseItBelongsTo,class1)
 
 ## Use SingularGradeItem.objects.create(gradePercentage=x) to set:
 # a student's semester GPA = SingularGradeItem.objects.create(gradePercentage=3.5, whichStudentsSemesterGPAisThis=student1)

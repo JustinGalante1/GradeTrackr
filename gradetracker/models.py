@@ -27,7 +27,8 @@ class SingularGradeItem(models.Model):
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    #cumulativeCredits = models.DecimalField(max_digits=4, decimal_places=1, null=True)
+    cumulativeCredits = models.DecimalField(max_digits=4, decimal_places=1, default=0)
+    cumulativeGPA = models.ForeignKey(SingularGradeItem, on_delete=models.CASCADE, related_name="cumGPA", null=True)
 
     def __str__(self):
         return self.user.username
@@ -47,7 +48,7 @@ class Course(models.Model):
         default=True)  # is this class used in GPA calculation or is it just a fork of a class someone uses purely for "what if" tracking purposes?
 
     Professor_Email = models.EmailField(null=True)  # if verified class, then we should be able to get this info
-    Average_From_VAgrades = models.DecimalField(max_digits=4, decimal_places=3,
+    Average_From_VAgrades = models.DecimalField(max_digits=6, decimal_places=2,
                                                 null=True)  # if verified we should be able to scrape grade from VAgrades.com
 
     name = models.CharField(max_length=100)  # either searchable name from Lou's List or enter your own, <100 characters
@@ -70,6 +71,7 @@ class GradeCategory(models.Model):
                                     decimal_places=2)  # wont work for grade categories that are worth 100% of the class. Hopefully this is never an issue
 
     courseItBelongsTo = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="categories")
+    avgCategoryGrade = models.ForeignKey(SingularGradeItem, on_delete=models.CASCADE, related_name="avgCategoryGrade", null=True)
     
     
     @property
@@ -99,9 +101,7 @@ class CourseForm(ModelForm):
 
 class Assignment(models.Model):  # abstract name, could be exam or quiz or anything that is worth something
     gradePercentage = models.DecimalField(max_digits=5, decimal_places=2, null=True)
-    notifyStudentOrNot = models.BooleanField(default=False)  # maybe a few days in advance of due date, email student
     name = models.CharField(max_length=100)
-    dueDate = models.DateTimeField(auto_now=False, auto_now_add=False, null=True)  # default none
 
     gradeCategoryItBelongsTo = models.ForeignKey(GradeCategory, on_delete=models.CASCADE, related_name="assignments")
 

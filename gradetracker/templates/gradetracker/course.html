@@ -2,57 +2,220 @@
 {% block content %}
 {% load static %}
 {% load gradetracker_tags %}
-<div class="container justify-content-center">
+
+
+        
+<div id ="overlay"></div>
+<div class="m container justify-content-center" id="main">
   <div class="cardGrid">
-    <div class="card" style="width: auto; overflow: hidden;" id="beautifiedCard">
-      <div class="card-body" style="padding-bottom: 1.75%;background-color: #f7f7f7;">
-          <!-- List all the categories associated with that course -->
-        <h4 class="card-title" style="text-align: center;"><b>
-          To meet your target
-        </b></h4>
-        <p class="card-text" style="color:black; text-align: center;">TODO: Add curr grade, target, how to get there</p>
+  <!-- Course Title -->
+  <div class="card scene_element scene_element--fadein" style="width: auto; overflow: hidden;" id="beautifiedCard" >
+    <div class="card-body" style="padding-bottom: 1.75%;" >
+
+        <!-- List all the categories associated with that course -->
+
+      <h4 class="card-title" style="text-align: center;"><b>
+        Target Grade: {{course.target_Grade|floatformat}}%
+      </b></h4>
+      <p class="card-text" style="color:black; text-align: center;">TODO: Add curr grade, target, how to get there</p>
+      </div></div>
+  
+     
+        
+ 
+ <!-- grade category modal-->
+
+
+ <div id="{{course.id}}CATEGORY" class="w3-modal" style="z-index: 2;">
+  <div class="w3-modal-content w3-animate-top " style="border-radius: 15px;">
+    <div class="card scene_element scene_element--fadein" style="width: auto; overflow: hidden;" id="beautifiedCard">
+      <div class="card-body" style="padding-bottom: 1.75%;">
+  
+        <h3 class="card-title" style="text-align: center;"><b>
+          Add a Grade Category to {{course.name}}
+        </b></h3>
+        <p class="card-text" style="color:black; text-align: center;">
+          <form action = "{% url 'gradetracker:gradecat' course.id%}" method = "post">
+          {% csrf_token %}
+          <input type="hidden" name="included" value="True">
+          <div style="padding:2%">
+          <label for="name"><b>Name of Grade Category</b></label>
+          <input type="text" class="form-control" id="name" name="name" required pattern=".*" placeholder="Exams">
+          </div>
+
+          <div style="padding:2%">
+          <label for="weight">% Weightage Towards Overall Grade</label>
+          <input type="number" class="form-control" id="weight"  name="weight" required pattern="[0-9]+\.[0-9][0-9]" placeholder="Ex: 15" max="99.99" min="1"> 
+          </div>
+
+          
+          <input type="hidden" class="submitOrCancel" id="submitOrCancel" name="submitOrCancel" value="">
+          
+          <div style="text-align: center;">
+          <button type="submit" class="btn btn-info" style="margin-left:2%;margin-right:0.5%;margin-top:2%;background-color: rgb(27,27,27);border-style: none;border-radius: 20px;" onclick="enableEverything()"><b>ADD</b></button>
+          <button type="cancel" class="btn btn-danger" style="margin-top:2%;border-radius: 20px;background-color: #ff3737;border-style: none;" onclick="document.getElementById('{{course.id}}CATEGORY').style.display='none';document.getElementById('overlay').style.display='none';cancelEverything()"><b>CANCEL</b></button>
+          </div>
+
+          </form></p>
         </div></div>
+  </div>
+</div>
+
+
+<!-- end grade category modal-->
+  
+    
+
 <!-- If there is at least one category in the course -->
   {% if grade_categories %} 
+
+  
     {% for category in grade_categories %}
+    <!-- add assignment modal-->
+    <div id="{{category.id}}CAT" class="w3-modal" style="z-index: 2;">
+      <div class="w3-modal-content w3-animate-top " style="border-radius: 15px;">
+        <div class="card scene_element scene_element--fadein" style="width: auto; overflow: hidden;" id="beautifiedCard">
+          <div class="card-body" style="padding-bottom: 1.75%;">
+      
+            
+      
+            <h3 class="card-title" style="text-align: center;"><b>
+              Add a grade to "{{ category.name }}"
+            </b></h3>
+            <p class="card-text" style="color:black; text-align: center;">
+              <form action = "{% url 'gradetracker:addAssignment' course.id%}" method = "post">
+              {% csrf_token %}
+  
+              <div style="padding:2%">
+              <label for="assignmentName"><b>Name</b></label>
+              <input type="text" class="form-control" id="assignmentName" name="assignmentName" required pattern=".*" placeholder="Quiz 3">
+              </div>
+  
+              <div style="padding:2%">
+              <label for="weight"><b>% Grade Earned</b></label>
+              <input type="number" class="form-control" id="weight" name="weight" required pattern="[0-9]+\.+[0-9][0-9]" placeholder="Ex: 81" title="In format of XX.XX" min="1" max="100" step="0.01">
+              </div>
+  
+              <input type="hidden" name="categoryChoice" id="categoryChoice" value="{{category.id}}">
+
+              <input type="hidden" class="submitOrCancel" id="submitOrCancel" name="submitOrCancel" value="">
+              
+              <div style="text-align: center;">
+              <button type="submit" class="btn btn-info" style="margin-left:2%;margin-right:0.5%;margin-top:2%;background-color: rgb(27,27,27);border-style: none;border-radius: 20px;" onclick="enableEverything()"><b>ADD</b></button>
+              <button type="cancel" class="btn btn-danger" style="margin-top:2%;border-radius: 20px;background-color: #ff3737;border-style: none;" onclick="document.getElementById('{{category.id}}CAT').style.display='none';document.getElementById('overlay').style.display='none';cancelEverything()"><b>CANCEL</b></button>
+              </div>
+  
+              </form></p>
+            </div></div>
+      </div>
+    </div>
+    <!-- end assignment modal-->
+    
+
+
+    {% for assignment in category_assignments|get_item:category.name %}
+
+              <!-- begin editing modal-->
+              <div id="{{assignment.id}}ASS" class="w3-modal" style="z-index: 2;">
+                <div class="w3-modal-content w3-animate-top " style="border-radius: 15px;">
+                  <div class="card scene_element scene_element--fadein" style="width: auto; overflow: hidden;" id="beautifiedCard">
+                    <div class="card-body" style="padding-bottom: 1.75%;">
+                
+                      
+                
+                      <h3 class="card-title" style="text-align: center;"><b>
+                        Editing "{{assignment.name}}"
+                      </b></h3>
+                      <p class="card-text" style="color:black; text-align: center;">
+                        <form action = "{% url 'gradetracker:edit_assignment' assignment.id%}" method = "post">
+                        {% csrf_token %}
+  
+                        <div style="padding:2%">
+                        <label for="assignmentName"><b>Name</b></label>
+                        <input type="text" class="form-control" id="assignmentName" name="assignmentName" required pattern=".*" value="{{assignment.name}}">
+                        </div>
+  
+                        <div style="padding:2%">
+                        <label for="weight"><b>% Grade Earned</b></label>
+                        <input type="number" class="form-control" id="weight" name="weight" required pattern="[0-9]+\.+[0-9][0-9]" placeholder="Currently: {{assignment.gradePercentage|floatformat}}" title="In format of XX.XX" min="1" max="100" step="0.01">
+                        </div>
+  
+                        <input type="hidden" class="form-control" id="courseID" name="courseID" required pattern="[0-9]+\.+[0-9][0-9]" value="{{course.id}}" title="In format of XX.XX" min="1" max="100" step="0.01">
+
+                        <input type="hidden" class="submitOrCancel" id="submitOrCancel" name="submitOrCancel" value="">
+
+                        <div style="text-align: center;">
+                        <button type="submit" class="btn btn-info" style="margin-left:2%;margin-right:0.5%;margin-top:2%;background-color: rgb(27,27,27);border-style: none;border-radius: 20px;" onclick="enableEverything()"><b>UPDATE</b></button>
+                        <button type="cancel" value="cancel" class="btn btn-danger" style="margin-top:2%;border-radius: 20px;background-color: #ff3737;border-style: none;" onclick="document.getElementById('{{assignment.id}}ASS').style.display='none';document.getElementById('overlay').style.display='none';cancelEverything()"><b>CANCEL</b></button></div>
+  
+                        </form></p>
+                      </div></div>
+                </div>
+              </div>
+              {% endfor %}
+
+
+
     <!--<li class="list-group-item">-->      
-      <div class="card" style="width: auto; overflow: hidden;" id="beautifiedCard">
+      <div class="card scene_element scene_element--fadein" style="width: auto; overflow: hidden;" id="beautifiedCard">
+
             <div class="card-body" style="padding-bottom: 1.75%;background-color: #f7f7f7;">
                 <!-- List all the categories associated with that course -->
               <h4 class="card-title"><b>
                 {{ category.name }}
-                <span style="float:right; color: green">X%</span>
+                <div style="float:right">
+                
+                {% if category.avgCategoryGrade.didGradeGoUp %}
+                      <span style="color:rgb(0, 165, 27)" class="fa fa-caret-up"></span><span style="color:rgb(0, 165, 27);">
+                {% elif category.avgCategoryGrade.didGradeGoUp == False %}
+                      <span style="color:red;" class="fa fa-caret-down"></span><span style="color:red;">
+                {% else %}
+                      <span style="color:rgb(27,27,27);">
+                {% endif %}&nbsp;{{ category.avgCategoryGrade.gradePercentage }}% </span></div>
+                
+                
               </b></h4>
-            <!--<p class="card-text" style="color:black; text-align: center;"> </p>-->  
               <div style="text-align:center">
-              <a href="{% url 'gradetracker:addAssignment' course_id=course.id%}" class="btn btn-primary" style="width: 40%; border-radius: 99px;box-shadow: 0 5px 15px rgba(18, 73, 255, 0.4);">
-                <b>&nbsp;<span class="ti-plus" style="vertical-align: -1.85px;"></span>&nbsp;&nbsp;ADD AN ASSIGNMENT</a></b>
+              <a onclick="document.getElementById('overlay').style.display='block';document.getElementById('{{category.id}}CAT').style.display='block';" class="btn btn-primary" style="width: auto;font-size: small; border-radius: 99px;box-shadow: 0 5px 15px rgba(18, 73, 255, 0.4);color:white;">
+                <b>&nbsp;<span class="ti-plus" style="vertical-align: -1.85px;"></span>&nbsp;&nbsp;ADD A GRADED ITEM</a></b>
               </div>
+
+              
+
+
+
+
+
+
               {% if category_assignments|get_item:category.name %}
                 <table style="margin-top: 2.5%;width:100%;text-align: center;">
                   <tr style="padding:1%">
                     <th>Name</th>
-                    <th>Due Date</th>
                     <th>Grade</th>
                     <th><span class="ti-more-alt" style="vertical-align: -1.85px;"></span></th>
                   </tr>
               {% endif %}
               {% for assignment in category_assignments|get_item:category.name %}
+
+             
+
               <!-- List of assignments associated with that course -->
-                <!-- Button to add an assignment -->
-                  <tr>
-                    <td>{{ assignment.name }}</td>
-                    <td>{{ assignment.dueDate }}</td>
-                    <td>{{ assignment.gradePercentage|floatformat }}%</td>
-                    <td><span class="ti-pencil" style="vertical-align: -1.85px;">&nbsp;<span class="ti-bell" style="vertical-align: 1px;">
-                    <a href="{% url 'gradetracker:delete_assignment' assignment_id=assignment.id%}" onclick="return confirm('Are you sure you want to delete this assignment?')" id="miniButtonRed"><span class="ti-trash" style="vertical-align: 0.75px;"></span></a>
-                    </td>
-                  </tr>
+                
+                <tr>
+                  <td>{{ assignment.name }}</td>
+                  <td>{{ assignment.gradePercentage|floatformat }}%</td>
+                  <td><a onclick="document.getElementById('{{assignment.id}}ASS').style.display='block';document.getElementById('overlay').style.display='block';" id="miniButtons"><span class="ti-pencil" style="vertical-align: 1px;"></a>
+                  <a href="{% url 'gradetracker:delete_assignment' assignment_id=assignment.id%}" onclick="return confirm('Are you sure you want to delete this assignment?')" id="miniButtonRed"><span class="ti-trash" style="vertical-align: 0.75px;"></span></a>
+                  </td>
+                </tr>
+
+                               
+             
+
               {% endfor %}
             </table>
               <div style="padding-top: 2%;">
               <a href="{% url 'gradetracker:delete_category' category_id=category.id%}" onclick="return confirm('Are you sure you want to delete this grade category?')" id="miniButtonRed" style="vertical-align: 1px;"><span class="ti-trash"></span></a>
-              <a href="{% url 'gradetracker:addAssignment' course_id=course.id%}" id="miniButtons" style="vertical-align: 0.5px; padding-right: 1%;"><b><span class="ti-plus"></span></b></a>
               <a href="" id="miniButtons" style="vertical-align: 0.5px; padding-right: 1%;"><b><span class="ti-pencil"></span></b></a>
               <a href="{% url 'gradetracker:addAssignment' course_id=course.id%}" id="miniButtons" style="vertical-align: 0.5px; padding-right: 1%;"><b><span class="ti-reload"></span></b></a>
               <span style="color:black; float: right;"><b>Worth {{ category.weightage|floatformat  }}%</b></span>
@@ -65,7 +228,36 @@
   {% else %}
   <h4 class="card-title"><b>Add a grade category to start tracking your grades for {{ course.name }}</b></h4>
   {% endif %} 
+
+
+
+  
             </div>
     </ul>
+
+<script>
+
+  function cancelEverything() {
+    var formsToDisable = document.getElementsByClassName("submitOrCancel");
+    var x;
+    for (x in formsToDisable) {
+      formsToDisable[x].value=0;
+    }
+  }
+
+  function enableEverything() {
+    var formsToEnable = document.getElementsByClassName("submitOrCancel");
+    var x;
+    for (x in formsToEnable) {
+      formsToEnable[x].value=1;
+    }
+  }
+
+</script>
+
+    
 </div>
+
+
+
 {% endblock content %}
